@@ -1,0 +1,249 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+// -------------------------------------------
+// ENUMS - Pour une meilleure consistance des données
+// -------------------------------------------
+
+enum Role {
+  ADMIN
+  PROFESSOR
+  STUDENT
+}
+
+enum DiplomaLevel {
+  LICENCE
+  MASTER
+  DOCTORAT
+}
+
+enum EvaluationType {
+  EXAM_FINAL
+  CONTROLE_CONTINU
+  TP // Travaux Pratiques
+  PROJET
+  PARTIEL
+}
+
+// -------------------------------------------
+// MODÈLES D'AUTHENTIFICATION (basés sur Auth.js / NextAuth)
+// -------------------------------------------
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String? // Champ pour l'authentification par identifiants (email/password)
+  role           Role      @default(STUDENT) // Rôle par défaut à la création
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  accounts         Account[]
+  sessions         Session[]
+  studentProfile   Student? // Un utilisateur peut avoir un profil étudiant
+  professorProfile Professor? // Un utilisateur peut avoir un profil professeur
+  adminProfile     Admin? // Un utilisateur peut avoir un profil admin
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  id      String    @id @default(uuid())
+  email   String
+  token   String    @unique
+  expires DateTime?
+
+  @@unique([token, email])
+}
+
+// AJOUTEZ CE NOUVEAU MODÈLE
+model PasswordResetToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+// -------------------------------------------
+// MODÈLES DE PROFILS UTILISATEURS
+// -------------------------------------------
+
+// Profil pour un étudiant, lié à un User
+model Student {
+  id              String @id @default(cuid())
+  studentIdNumber String @unique // Le numéro de matricule de l'étudiant
+  userId          String @unique
+  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  enrollments Enrollment[]
+  grades      Grade[]
+}
+
+// Profil pour un professeur, lié à un User
+model Professor {
+  id        String  @id @default(cuid())
+  specialty String? // Spécialité du professeur
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  // Un professeur peut enseigner plusieurs Éléments Constitutifs (EC)
+  coursesTaught EC[]
+}
+
+// Profil pour un administrateur, lié à un User
+model Admin {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// -------------------------------------------
+// MODÈLES DE LA STRUCTURE ACADÉMIQUE (LMD)
+// -------------------------------------------
+
+// Représente une année académique, ex: "2024-2025"
+model AcademicYear {
+  id        String   @id @default(cuid())
+  year      String   @unique // ex: "2024-2025"
+  startDate DateTime
+  endDate   DateTime
+
+  enrollments Enrollment[]
+}
+
+// Représente une formation diplômante
+model Formation {
+  id           String       @id @default(cuid())
+  name         String // ex: "Licence en Économie et Gestion"
+  diplomaLevel DiplomaLevel // LICENCE, MASTER, DOCTORAT
+
+  // Relations
+  semesters   Semester[]
+  enrollments Enrollment[]
+}
+
+// Représente un semestre au sein d'une formation (S1, S2...)
+model Semester {
+  id          String    @id @default(cuid())
+  name        String // ex: "Semestre 1"
+  formationId String
+  formation   Formation @relation(fields: [formationId], references: [id])
+
+  // Relations
+  ues UE[]
+}
+
+// Représente une Unité d'Enseignement (UE)
+model UE {
+  id           String   @id @default(cuid())
+  name         String // ex: "UE Fondamentale 1 : Introduction à l'Économie"
+  totalCredits Float // Nombre total de crédits ECTS pour cette UE
+  semesterId   String
+  semester     Semester @relation(fields: [semesterId], references: [id])
+
+  // Relations
+  ecs EC[]
+}
+
+// Représente un Élément Constitutif (EC) - un cours spécifique
+model EC {
+  id          String     @id @default(cuid())
+  name        String // ex: "Microéconomie"
+  credits     Float // Nombre de crédits ECTS pour cet EC
+  ueId        String
+  ue          UE         @relation(fields: [ueId], references: [id])
+  professorId String? // Un EC est enseigné par un professeur (peut être optionnel)
+  professor   Professor? @relation(fields: [professorId], references: [id])
+
+  // Relations
+  evaluations Evaluation[]
+}
+
+// -------------------------------------------
+// MODÈLES DE LIAISON : INSCRIPTIONS & NOTES
+// -------------------------------------------
+
+// Table de liaison qui inscrit un étudiant à une formation pour une année donnée
+model Enrollment {
+  id             String       @id @default(cuid())
+  studentId      String
+  student        Student      @relation(fields: [studentId], references: [id])
+  formationId    String
+  formation      Formation    @relation(fields: [formationId], references: [id])
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+
+  @@unique([studentId, formationId, academicYearId]) // Un étudiant ne peut s'inscrire qu'une fois à une formation par an
+}
+
+// Représente une évaluation spécifique au sein d'un EC (examen final, TP, etc.)
+model Evaluation {
+  id   String         @id @default(cuid())
+  type EvaluationType
+  date DateTime
+  ecId String
+  ec   EC             @relation(fields: [ecId], references: [id])
+
+  // Relations
+  grades Grade[]
+}
+
+// Représente la note obtenue par un étudiant pour une évaluation donnée
+model Grade {
+  id        String   @id @default(cuid())
+  value     Float // La note, ex: 15.5
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  studentId    String
+  student      Student    @relation(fields: [studentId], references: [id])
+  evaluationId String
+  evaluation   Evaluation @relation(fields: [evaluationId], references: [id])
+
+  @@unique([studentId, evaluationId]) // Un étudiant a une seule note par évaluation
+}
