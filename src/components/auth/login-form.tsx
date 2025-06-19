@@ -116,7 +116,7 @@ export const LoginForm = () => {
             {/* Affichage de l'erreur */}
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {success && <p className="text-green-500 text-sm">{success}</p>}
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button variant={"default"} type="submit" className="w-full" disabled={isPending}>
               {isPending ? "Connexion en cours..." : "Se connecter"}
             </Button>
           </form>

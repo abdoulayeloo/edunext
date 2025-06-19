@@ -1,8 +1,6 @@
 // src/auth.config.ts
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import Github from "next-auth/providers/github";
 
 import bcrypt from "bcryptjs"; // bcryptjs est une version plus compatible que bcrypt
 
@@ -11,8 +9,6 @@ import { LoginSchema } from "@/schemas";
 
 export default {
     providers: [
-        Google,
-        Github,
         Credentials({
             async authorize(credentials) {
                 const validatedFields = LoginSchema.safeParse(credentials)

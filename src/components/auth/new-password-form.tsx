@@ -28,6 +28,18 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 
+/**
+ * Formulaire pour définir un nouveau mot de passe. Il utilise la Hook useForm et
+ * la fonction newPassword pour envoyer une requête de réinitialisation du mot de
+ * passe.
+ *
+ * Il prend en paramètre de route le token de réinitialisation du mot de passe.
+ *
+ * Les erreurs et les messages de succès sont affichés en-dessous du formulaire.
+ *
+ * Si le formulaire est soumis avec succès, le composant affiche un lien pour se
+ * reconnecter.
+ */
 export const NewPasswordForm = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");

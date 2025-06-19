@@ -2,42 +2,46 @@
 "use client";
 
 import { useState } from "react";
-import { Formation, Semester, UE, EC } from "@prisma/client";
+import { Formation, Semester, UE, EC, User } from "@prisma/client";
 import { PlusCircle, Edit } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 
-
+// Importez tous vos formulaires
 import { UEForm } from "./ue-form";
-import { SemesterForm } from "./semester-form";
-// import { ECForm } from "./ec-form";
+import { ECForm } from "./ec-form";
+// import { SemesterForm } from "./semester-form";
 
 // Type complet de la structure
 type FormationWithStructure = Formation & {
   semesters: (Semester & { ues: (UE & { ecs: EC[] })[] })[];
 };
 
-// Définition des types pour la modale
-type ModalType =
-  | "createUE"
-  | "editUE"
-  | "createSemester"
-  | "editSemester"
-  | "createEC"
-  | "editEC";
+// ... (Définition des types ModalType et ModalData)
+type ModalType = "createUE" | "editUE" | "createEC" | "editEC";
 interface ModalData {
-  semester?: Semester;
+  semesterId?: string;
   ue?: UE;
+  ueId?: string;
   ec?: EC;
+}
+
+interface FormationStructureClientProps {
+  formation: FormationWithStructure;
+  professors: User[]; // Accepte la liste des professeurs
 }
 
 export const FormationStructureClient = ({
   formation,
-}: {
-  formation: FormationWithStructure;
-}) => {
+  professors,
+}: FormationStructureClientProps) => {
+  
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activeSemester, setActiveSemester] = useState(
     formation.semesters[0] || null
   );
@@ -51,9 +55,14 @@ export const FormationStructureClient = ({
     data: {},
   });
 
+ 
+
   const openModal = (type: ModalType, data: ModalData = {}) =>
     setModal({ isOpen: true, type, data });
   const closeModal = () => setModal({ isOpen: false, type: null, data: {} });
+  const setModalOpen = (isOpen: boolean) => {
+    setModal({ isOpen, type: modal.type, data: modal.data });
+  };
 
   const renderModalContent = () => {
     switch (modal.type) {
@@ -67,9 +76,23 @@ export const FormationStructureClient = ({
             onClose={closeModal}
           />
         );
-      // Ajoutez les cas pour Semester et EC ici...
-      case "createSemester":
-        return <SemesterForm formationId={formation.id} onClose={closeModal} />;
+      case "createEC":
+        return (
+          <ECForm
+            ueId={modal.data.ueId!}
+            professors={professors}
+            onClose={closeModal}
+          />
+        );
+      case "editEC":
+        return (
+          <ECForm
+            ueId={modal.data.ec!.ueId}
+            initialData={modal.data.ec}
+            professors={professors}
+            onClose={closeModal}
+          />
+        );
       default:
         return null;
     }
@@ -77,48 +100,13 @@ export const FormationStructureClient = ({
 
   return (
     <>
-      <Dialog open={modal.isOpen} onOpenChange={closeModal}>
+      <Dialog open={modal.isOpen} onOpenChange={setModalOpen}>
         <DialogContent>{renderModalContent()}</DialogContent>
       </Dialog>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex justify-between items-center">
-              Semestres
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => openModal("createSemester")}
-              >
-                <PlusCircle className="h-4 w-4" />
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {formation.semesters.map((semester) => (
-              <div key={semester.id} className="flex items-center group">
-                <Button
-                  variant={
-                    activeSemester?.id === semester.id ? "secondary" : "ghost"
-                  }
-                  className="w-full justify-start"
-                  onClick={() => setActiveSemester(semester)}
-                >
-                  {semester.name}
-                </Button>
-                {/* Actions pour le semestre apparaissent au survol */}
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8 opacity-0 group-hover:opacity-100"
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        {/* ... (Partie pour les Semestres) ... */}
+        <Card className="md:col-span-1">{/* ... */}</Card>
 
         <div className="md:col-span-2 space-y-6">
           {activeSemester ? (
@@ -137,12 +125,42 @@ export const FormationStructureClient = ({
                       </Button>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>{/* ... affichage des ECs ... */}</CardContent>
+                  <CardContent>
+                    <ul className="space-y-2 pl-4">
+                      {ue.ecs.map((ec) => (
+                        <li
+                          key={ec.id}
+                          className="flex justify-between items-center text-sm group"
+                        >
+                          <span>
+                            {ec.name} ({ec.credits} ECTS)
+                          </span>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 opacity-0 group-hover:opacity-100"
+                            onClick={() => openModal("editEC", { ec })}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-4 w-full"
+                      onClick={() => openModal("createEC", { ueId: ue.id })}
+                    >
+                      <PlusCircle className="h-4 w-4 mr-2" />
+                      Ajouter un EC
+                    </Button>
+                  </CardContent>
                 </Card>
               ))}
               <Button
                 size="sm"
-                variant="outline"
+                variant="default"
                 className="w-full"
                 onClick={() => openModal("createUE")}
               >

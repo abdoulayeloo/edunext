@@ -17,6 +17,9 @@ export const getProfessorDashboardData = async (userId: string) => {
                 },
             },
             include: {
+                evaluations: {
+                    orderBy: { date: "asc" },
+                },
                 ue: {
                     include: {
                         semester: {
@@ -47,6 +50,13 @@ export const getProfessorDashboardData = async (userId: string) => {
                                 user: {
                                     select: { id: true, name: true, email: true },
                                 },
+                                grades: {
+                                    where: {
+                                        evaluation: {
+                                            ecId: ec.id,
+                                        },
+                                    },
+                                },
                             },
                         },
                     },
@@ -56,6 +66,7 @@ export const getProfessorDashboardData = async (userId: string) => {
                 const students = enrollments.map(enrollment => ({
                     ...enrollment.student.user,
                     studentProfileId: enrollment.student.id,
+                    grades: enrollment.student.grades,
                 }));
 
                 return {
@@ -67,7 +78,7 @@ export const getProfessorDashboardData = async (userId: string) => {
 
         return dashboardData;
     } catch (error) {
-        console.error("Erreur lors de la récupération des données du professeur:", error);
+        console.error("Error fetching professor dashboard data:", error);
         return [];
     }
 };

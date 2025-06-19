@@ -9,10 +9,13 @@ const ProfessorDashboardPage = async () => {
 
   // Sécurité : Vérifier si l'utilisateur est bien un professeur
   if (!session?.user || session.user.role !== "PROFESSOR") {
-    return redirect("/");
+    return redirect("/connexion");
   }
 
-  const dashboardData = await getProfessorDashboardData(session?.user?.id ?? "");
+  const dashboardData = await getProfessorDashboardData(
+    session?.user?.id as string
+  );
+  console.log("dashboardData: ", dashboardData);
 
   return (
     <div className="p-6">

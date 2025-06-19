@@ -29,6 +29,7 @@ async function main() {
   console.log("👤 Creating users...");
   const hashedPassword = await bcrypt.hash("password123", 10);
 
+
   const admin = await db.user.create({
     data: {
       name: "Admin EduNext",

@@ -2,9 +2,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
-import { auth } from "@/auth"; // Importez la session depuis auth.ts
+import { auth } from "@/auth";
 import "./globals.css";
-import { Navbar } from "@/components/navbar/navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,10 +23,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     // Enveloppez l'application avec le SessionProvider
     <SessionProvider session={session}>
       <html lang="fr">
-        <body className={inter.className}>
-          <Navbar className="px-10 bg-accent" />
-          {children}
-        </body>
+        <body className={inter.className}>{children}</body>
       </html>
     </SessionProvider>
   );

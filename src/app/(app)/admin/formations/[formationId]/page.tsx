@@ -1,17 +1,20 @@
 // src/app/admin/formations/[formationId]/page.tsx
 import { getFormationById } from "@/actions/formations/get-formations";
-// import { getProfessors } from "@/data/user"; // Importez la nouvelle fonction
+import { getEnrolledStudentsByFormation, getStudentsNotInFormation } from "@/data/enrollement/index";
 import { redirect } from "next/navigation";
 import { FormationStructureClient } from "./_components/formation-structure-client";
 import { Toaster } from "sonner";
+import { EnrollmentClient } from "./_components/enrollment-client";
+import { getProfessors } from "@/data/user";
 
-// ... (interface FormationIdPageProps)
+// ...
 
 const FormationIdPage = async ({ params }: { params: { formationId: string }}) => {
-  // On lance les deux requêtes en parallèle pour plus d'efficacité
-  const [formation ] = await Promise.all([
+  const [formation, professors, enrolledStudents, availableStudents] = await Promise.all([
     getFormationById(params.formationId),
-    // getProfessors(),
+    getProfessors(),
+    getEnrolledStudentsByFormation(params.formationId),
+    getStudentsNotInFormation(params.formationId),
   ]);
 
   if (!formation) {
@@ -19,19 +22,21 @@ const FormationIdPage = async ({ params }: { params: { formationId: string }}) =
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 space-y-6">
       <Toaster position="top-center" richColors />
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">{formation.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            Structure pédagogique de la formation
-          </p>
-        </div>
+        {/* ... (Titre de la page) ... */}
       </div>
-      <hr className="my-6" />
-      {/* On passe la liste des professeurs au composant client */}
-      <FormationStructureClient formation={formation} />
+      <hr />
+      {/* Module de gestion de la structure */}
+      <FormationStructureClient formation={formation} professors={professors} />
+      <hr />
+      {/* Nouveau Module de gestion des inscriptions */}
+      <EnrollmentClient 
+        formationId={formation.id}
+        enrolledStudents={enrolledStudents}
+        availableStudents={availableStudents}
+      />
     </div>
   );
 };
