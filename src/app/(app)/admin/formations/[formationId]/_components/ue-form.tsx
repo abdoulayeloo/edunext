@@ -1,4 +1,3 @@
-// src/app/admin/formations/[formationId]/_components/ue-form.tsx
 "use client";
 
 import * as z from "zod";
@@ -9,7 +8,7 @@ import { toast } from "sonner";
 import { UE } from "@prisma/client";
 
 import { UESchema } from "@/schemas";
-import { createUE, updateUE } from "@/actions/UEs/index";
+import { createUE, updateUE } from "@/actions/UEs"; 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -55,7 +54,7 @@ export const UEForm = ({ semesterId, initialData, onClose }: UEFormProps) => {
     <div>
       <h3 className="text-lg font-medium mb-4">{formTitle}</h3>
       <Form {...form}>
-        <form  onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
             name="name"
@@ -82,7 +81,7 @@ export const UEForm = ({ semesterId, initialData, onClose }: UEFormProps) => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button onClick={() => console.log("UE enregistré") } type="submit" className="w-full cursor-pointer" disabled={isPending}>
             {isPending ? "Enregistrement..." : actionLabel}
           </Button>
         </form>

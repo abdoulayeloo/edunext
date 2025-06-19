@@ -83,13 +83,13 @@ export const Sidebar = () => {
         <Button
           asChild
           variant="destructive"
-          className="w-full justify-start"
+          className="w-full justify-start cursor-pointer"
           onClick={() => logout()}
         >
-          <Link href="/connexion">
+          <div>
             <LogOut className="h-4 w-4 mr-2" />
             Deconnexion
-          </Link>
+          </div>
         </Button>
       </div>
     </div>

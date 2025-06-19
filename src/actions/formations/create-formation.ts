@@ -27,7 +27,7 @@ export const createFormation = async (values: z.infer<typeof FormationSchema>) =
 
         await prisma.formation.create({ data: { name, diplomaLevel } });
 
-        revalidatePath("/app/admin/formations");
+        revalidatePath("/admin/formations");
         return { success: "Formation créée avec succès !" };
     } catch {
         return { error: "Une erreur est survenue." };

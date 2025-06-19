@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import "./globals.css";
+import { ModalProvider } from "@/components/theme/provider/modal-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     // Enveloppez l'application avec le SessionProvider
     <SessionProvider session={session}>
       <html lang="fr">
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          <ModalProvider />
+          {children}
+        </body>
       </html>
     </SessionProvider>
   );
