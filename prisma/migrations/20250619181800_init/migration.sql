@@ -182,6 +182,22 @@ CREATE TABLE `Grade` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `AuditLog` (
+    `id` VARCHAR(191) NOT NULL,
+    `action` VARCHAR(191) NOT NULL,
+    `entityId` VARCHAR(191) NOT NULL,
+    `entityType` VARCHAR(191) NOT NULL,
+    `entityTitle` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `userName` VARCHAR(191) NULL,
+    `userEmail` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `Account` ADD CONSTRAINT `Account_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 

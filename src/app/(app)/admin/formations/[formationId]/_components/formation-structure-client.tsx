@@ -114,17 +114,17 @@ export const FormationStructureClient = ({
           </CardHeader>
           <CardContent className="space-y-2">
             {formation.semesters.map((semester) => (
-              <div key={semester.id} className="flex items-center group">
+              <div key={semester.id} className="flex items-center group gap-3">
                 <Button
                   variant={
                     activeSemester?.id === semester.id ? "secondary" : "ghost"
                   }
-                  className="w-full justify-start"
+                  className="w-4/5 justify-start"
                   onClick={() => setActiveSemester(semester)}
                 >
                   {semester.name}
                 </Button>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
+                <div className="transition-opacity flex items-center">
                   <Button
                     size="icon"
                     variant="ghost"

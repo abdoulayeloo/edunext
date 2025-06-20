@@ -3,26 +3,24 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { GraduationCap, Users, Library, Activity } from "lucide-react";
 
+import { getAuditLogs } from "@/data/audit-log/index";
+import { AuditLogItem } from "@/components/admin/audit-log-item";
+
 import { auth } from "@/auth";
-import { 
-  getUsersCount, 
-  getFormationsCount 
-} from "@/actions/admin/admin-stats";
+import { getUsersCount, getFormationsCount } from "@/actions/admin/admin-stats";
 import { StatCard } from "@/components/admin/stat-card";
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 const AdminDashboardPage = async () => {
+  // Récupération des logs
+  const logs = await getAuditLogs();
+
   // 1. Vérification des droits côté serveur (défense en profondeur)
   const session = await auth();
   if (session?.user?.role !== "ADMIN") {
     // Cette redirection est une sécurité supplémentaire, le middleware fait déjà le travail.
-    return redirect("/admin"); 
+    return redirect("/admin");
   }
 
   // 2. Récupération des données
@@ -35,20 +33,20 @@ const AdminDashboardPage = async () => {
 
       {/* Section des Statistiques */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <StatCard 
-          title="Étudiants Inscrits" 
-          value={usersCount.students} 
-          icon={Users} 
+        <StatCard
+          title="Étudiants Inscrits"
+          value={usersCount.students}
+          icon={Users}
         />
-        <StatCard 
-          title="Professeurs" 
-          value={usersCount.professors} 
-          icon={GraduationCap} 
+        <StatCard
+          title="Professeurs"
+          value={usersCount.professors}
+          icon={GraduationCap}
         />
-        <StatCard 
-          title="Formations Actives" 
-          value={formationsCount} 
-          icon={Library} 
+        <StatCard
+          title="Formations Actives"
+          value={formationsCount}
+          icon={Library}
         />
       </div>
 
@@ -78,15 +76,17 @@ const AdminDashboardPage = async () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {"Le journal d'activité sera implémenté ici."}
-            </p>
-            {/* Exemple :
-            <ul>
-              <li>- L'utilisateur admin@edunext.sn a créé la formation "Master CCA".</li>
-              <li>- Le rôle de "Aminata Fall" a été changé en "PROFESSOR".</li>
-            </ul>
-            */}
+            {logs.length > 0 ? (
+              <ul className="space-y-4">
+                {logs.map((log) => (
+                  <AuditLogItem key={log.id} log={log} />
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Aucune activité récente.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>

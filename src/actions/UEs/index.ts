@@ -20,18 +20,18 @@ import { revalidatePath } from "next/cache";
 export const createUE = async (values: z.infer<typeof UESchema>) => {
     const session = await auth();
     if (session?.user?.role !== "ADMIN") return { error: "Accès non autorisé !" };
-    
+
     const validatedFields = UESchema.safeParse(values);
-    
+
     if (!validatedFields.success) return { error: "Champs invalides." };
-    
+
     const { name, totalCredits, semesterId } = validatedFields.data;
-    
+
     // Note: On a besoin de l'ID de la formation pour revalider le chemin
     const semester = await prisma.semester.findUnique({ where: { id: semesterId } });
-    
+
     if (!semester) return { error: "Semestre non trouvé !" };
-    
+
     await prisma.uE.create({ data: { name, totalCredits, semesterId } });
     revalidatePath(`/admin/formations/${semester.formationId}`);
     return { success: "UE créée avec succès !" };
@@ -54,6 +54,7 @@ export const updateUE = async (values: z.infer<typeof UESchema>) => {
     if (!ue) return { error: "UE introuvable." };
 
     await prisma.uE.update({ where: { id }, data: { name, totalCredits } });
+    
     revalidatePath(`/admin/formations/${ue.semester.formationId}`);
     return { success: "UE mise à jour !" };
 }

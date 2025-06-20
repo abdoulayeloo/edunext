@@ -4,33 +4,64 @@
 import { User } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { Upload } from "lucide-react";
+import { UserImporter } from "./user-importer";
 
 import { Button } from "@/components/ui/button";
 // import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { UserForm } from "./user-form";
-import { DataTable } from "./data-table";
+import { DataTable } from "@/components/ui/data-table";
+import { useRouter } from "next/navigation";
 
 export const UsersClient = ({ data }: { data: User[] }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
-    return (
-        <>
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogContent>
-                <DialogHeader><DialogTitle>Créer un nouvel utilisateur</DialogTitle></DialogHeader>
-                <UserForm onClose={() => setIsModalOpen(false)} />
-            </DialogContent>
-        </Dialog>
-        <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold">Utilisateurs ({data.length})</h1>
-            <Button onClick={() => setIsModalOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Créer un utilisateur
-            </Button>
+  const router = useRouter();
+  const handleRowClick = (userId: string) => {
+    router.push(`/admin/users/${userId}`);
+  };
+  return (
+    <>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Créer un nouvel utilisateur</DialogTitle>
+          </DialogHeader>
+          <UserForm onClose={() => setIsModalOpen(false)} />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isImportModalOpen} onOpenChange={setIsImportModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Importer des utilisateurs par CSV</DialogTitle>
+          </DialogHeader>
+          <UserImporter onClose={() => setIsImportModalOpen(false)} />
+        </DialogContent>
+      </Dialog>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold">Utilisateurs ({data.length})</h1>
+        <div className="flex gap-x-2">
+          <Button onClick={() => setIsImportModalOpen(true)} variant="outline">
+            <Upload className="h-4 w-4 mr-2" />
+            Importer
+          </Button>
+          <Button onClick={() => setIsCreateModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Créer un utilisateur
+          </Button>
         </div>
-        <DataTable columns={columns} data={data} />
-        </>
-    )
-}
+      </div>
+      <DataTable columns={columns} data={data} onRowClick={handleRowClick} />
+    </>
+  );
+};

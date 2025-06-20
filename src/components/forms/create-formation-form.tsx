@@ -4,7 +4,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormationSchema } from "@/schemas";
-import { createFormation } from "@/actions/academic/create-formation";
+import { createFormation } from "@/actions/formations/create-formation";
 import { useTransition } from "react";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";

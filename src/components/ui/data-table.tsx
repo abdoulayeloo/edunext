@@ -1,4 +1,4 @@
-// src/app/admin/formations/_components/data-table.tsx
+// src/components/ui/data-table.tsx
 "use client";
 
 import * as React from "react";
@@ -21,16 +21,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+// On ajoute une contrainte pour s'assurer que les données ont un champ 'id'
+interface BaseData {
+  id: string;
 }
 
-export function DataTable<TData, TValue>({
+interface DataTableProps<TData extends BaseData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  onRowClick?: (id: string) => void;
+}
+
+export function DataTable<TData extends BaseData, TValue>({
   columns,
   data,
+  onRowClick, // <-- On récupère la prop
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const table = useReactTable({
@@ -47,24 +53,21 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      {/* TODO: Ajouter un bouton "Créer une formation" ici */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -74,15 +77,15 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() => onRowClick && onRowClick(row.original.id)}
+                  className={onRowClick ? "cursor-pointer" : ""}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      <Link href={`/admin/formations/${cell.row.original.id}`}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                        </Link>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -93,7 +96,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Aucune formation trouvée.
+                  Aucun résultat.
                 </TableCell>
               </TableRow>
             )}

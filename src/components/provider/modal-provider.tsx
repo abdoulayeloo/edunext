@@ -14,6 +14,7 @@ import { SemesterForm } from "@/app/(app)/admin/formations/[formationId]/_compon
 import { UEForm } from "@/app/(app)/admin/formations/[formationId]/_components/ue-form";
 import { ECForm } from "@/app/(app)/admin/formations/[formationId]/_components/ec-form";
 import { FormationForm } from "@/app/(app)/admin/formations/_components/formation-form";
+import { AcademicYearForm } from "@/app/(app)/admin/academic-years/_components/academic-year-form";
 
 // Importez tous vos formulaires
 
@@ -45,7 +46,6 @@ export const ModalProvider = () => {
             onClose={handleClose}
           />
         );
-
       case "createUE":
         return <UEForm semesterId={data.semesterId!} onClose={handleClose} />;
       case "editUE":
@@ -56,7 +56,6 @@ export const ModalProvider = () => {
             onClose={handleClose}
           />
         );
-
       case "createEC":
         return (
           <ECForm
@@ -91,6 +90,15 @@ export const ModalProvider = () => {
             </DialogHeader>
             <FormationForm initialData={data.formation} onClose={handleClose} />
           </>
+        );
+      case "createAcademicYear":
+        return <AcademicYearForm onClose={handleClose} />;
+      case "editAcademicYear":
+        return (
+          <AcademicYearForm
+            initialData={data.academicYear}
+            onClose={handleClose}
+          />
         );
       default:
         return null;

@@ -56,12 +56,17 @@ export const ECForm = ({
     },
   });
 
+  /**
+   * Submit the form, either creating a new EC or updating an existing one
+   * depending on the value of `initialData`.
+   *
+   * @param values - The form values as validated by `ECSchema`.
+   */
   const onSubmit = (values: z.infer<typeof ECSchema>) => {
     startTransition(() => {
       const action = initialData
         ? updateEC({ ...values, id: initialData.id })
         : createEC(values);
-
       action
         .then((data) => {
           if (data.error) toast.error(data.error);
@@ -142,7 +147,7 @@ export const ECForm = ({
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button type="reset" className="w-full" disabled={isPending}>
             {isPending ? "Enregistrement..." : actionLabel}
           </Button>
         </form>

@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 import { Sidebar } from "@/components/navigation/sidebar";
 import { Toaster } from "sonner"; // Pour les notifications
+import { Header } from "@/components/navigation/header";
 
 const AppLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await auth();
@@ -14,7 +15,7 @@ const AppLayout = async ({ children }: { children: React.ReactNode }) => {
           <Sidebar />
         </aside>
         <main className="md:pl-64 h-full bg-muted/40">
-          {/* TODO: Ajouter un Header/Navbar ici si besoin */}
+          <Header />
           <Toaster position="top-center" richColors />
           {children}
         </main>

@@ -5,6 +5,7 @@ import { FormationSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 import { prisma } from '@/lib/db';
 import { z } from "zod";
+import { createAuditLog } from "@/lib/audit-log";
 
 // --- ACTIONS POUR LES FORMATIONS ---
 
@@ -25,7 +26,16 @@ export const createFormation = async (values: z.infer<typeof FormationSchema>) =
         const existingFormation = await prisma.formation.findFirst({ where: { name } });
         if (existingFormation) return { error: "Une formation avec ce nom existe déjà !" };
 
-        await prisma.formation.create({ data: { name, diplomaLevel } });
+        const formation = await prisma.formation.create({ data: { name, diplomaLevel } });
+
+        // --- JOURNALISATION DE L'ACTION ---
+        await createAuditLog({
+            action: "CREATE",
+            entityType: "FORMATION",
+            entityId: formation.id,
+            entityTitle: formation.name,
+        });
+        // --- FIN DE LA JOURNALISATION ---
 
         revalidatePath("/admin/formations");
         return { success: "Formation créée avec succès !" };

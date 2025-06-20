@@ -11,7 +11,7 @@ generator client {
 datasource db {
   provider          = "mysql"
   url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 // -------------------------------------------
@@ -28,6 +28,58 @@ enum DiplomaLevel {
   LICENCE
   MASTER
   DOCTORAT
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model PreRegistration {
+  id                      String   @id @default(cuid())
+  
+  // Etat Civil
+  lastName                String
+  firstName               String
+  dateOfBirth             DateTime
+  placeOfBirth            String
+  nationality             String
+  gender                  String
+  address                 String
+  city                    String
+  country                 String
+  phone                   String
+  email                   String   @unique
+
+  // Programme
+  desiredProgramId        String // Fait référence à l'ID d'une Formation
+  entryYear               String
+  examCenter              String
+
+  // Pour l'instant, nous stockons les chemins des fichiers. L'upload sera une étape future.
+  diplomaCopyPath         String?
+  transcriptsPath         String?
+  photoPath               String?
+
+  // Responsable Financier
+  financierLastName       String
+  financierFirstName      String
+  financierAddress        String
+  financierPhone          String
+  financierEmail          String
+
+  // Infos supplémentaires
+  howDidYouHear           String?
+  
+  // Statut de la candidature
+  status                  ApplicationStatus @default(PENDING)
+
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  // Relation avec la Formation
+  desiredProgram          Formation @relation(fields: [desiredProgramId], references: [id])
 }
 
 enum EvaluationType {
@@ -48,8 +100,9 @@ model User {
   email          String?   @unique
   emailVerified  DateTime?
   image          String?
-  hashedPassword String? // Champ pour l'authentification par identifiants (email/password)
-  role           Role      @default(STUDENT) // Rôle par défaut à la création
+  hashedPassword String? 
+  role           Role      @default(STUDENT)
+  isActive       Boolean   @default(true)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
@@ -165,6 +218,8 @@ model Formation {
   // Relations
   semesters   Semester[]
   enrollments Enrollment[]
+
+  PreRegistration PreRegistration[]
 }
 
 // Représente un semestre au sein d'une formation (S1, S2...)
@@ -246,4 +301,17 @@ model Grade {
   evaluation   Evaluation @relation(fields: [evaluationId], references: [id])
 
   @@unique([studentId, evaluationId]) // Un étudiant a une seule note par évaluation
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      String   // ex: "CREATE", "UPDATE", "DELETE"
+  entityId    String   // ID de l'entité affectée (ex: ID d'une formation)
+  entityType  String   // Type de l'entité (ex: "FORMATION", "USER")
+  entityTitle String   // Titre/nom de l'entité pour un affichage facile
+  userId      String
+  userName    String?
+  userEmail   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

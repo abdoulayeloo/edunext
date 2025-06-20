@@ -7,7 +7,8 @@ import { Plus } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { Button } from "@/components/ui/button";
 import { columns } from "./columns";
-import { DataTable } from "./data-table";
+import { DataTable } from "../../../../../components/ui/data-table";
+import { useRouter } from "next/navigation";
 
 interface FormationsClientProps {
   formations: Formation[];
@@ -16,6 +17,11 @@ interface FormationsClientProps {
 export const FormationsClient = ({ formations }: FormationsClientProps) => {
   // Plus besoin de useState ici ! On récupère la fonction onOpen du store.
   const { onOpen } = useModal();
+  const router = useRouter()
+
+  const handleRowClick = (formationId: string) => {
+    router.push(`/admin/formations/${formationId}`);
+  };
 
   return (
     <>
@@ -28,7 +34,7 @@ export const FormationsClient = ({ formations }: FormationsClientProps) => {
           Créer une formation
         </Button>
       </div>
-      <DataTable columns={columns} data={formations} />
+      <DataTable columns={columns} data={formations} onRowClick={handleRowClick}  />
     </>
   );
 };

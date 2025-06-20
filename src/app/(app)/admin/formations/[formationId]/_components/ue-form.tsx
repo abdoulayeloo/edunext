@@ -81,7 +81,7 @@ export const UEForm = ({ semesterId, initialData, onClose }: UEFormProps) => {
               </FormItem>
             )}
           />
-          <Button onClick={() => console.log("UE enregistré") } type="submit" className="w-full cursor-pointer" disabled={isPending}>
+          <Button type="submit" className="w-full cursor-pointer" disabled={isPending}>
             {isPending ? "Enregistrement..." : actionLabel}
           </Button>
         </form>

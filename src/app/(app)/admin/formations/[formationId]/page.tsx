@@ -10,15 +10,16 @@ import { Toaster } from "sonner";
 import { EnrollmentClient } from "./_components/enrollment-client";
 import { getProfessors } from "@/data/user";
 
-// ...
+
+interface Params {
+  params: { formationId: string };
+}
 
 const FormationIdPage = async ({
   params,
-}: {
-  params: { formationId: string };
-}) => {
+}: Params) => {
   // On extrait l'ID de la formation dans une constante avant toute chose.
-  const  { formationId } = params;
+  const {formationId} = await params;
 
   // On lance les requêtes en parallèle en utilisant la constante `formationId`.
   const [formation, professors, enrolledStudents, availableStudents] =

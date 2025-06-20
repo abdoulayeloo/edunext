@@ -3,11 +3,18 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { User, Role } from "@prisma/client";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { updateUserRole } from "@/actions/admin/update-user";
 import { toast } from "sonner";
 // Importez CellAction que nous allons créer
 import { CellAction } from "./cell-action";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<User>[] = [
   { accessorKey: "name", header: "Nom" },
@@ -22,19 +29,35 @@ export const columns: ColumnDef<User>[] = [
           defaultValue={user.role}
           onValueChange={(newRole) => {
             toast.promise(updateUserRole(user.id, newRole as Role), {
-                loading: 'Mise à jour du rôle...',
-                success: (data) => data.success || "Rôle mis à jour!",
-                error: (data) => data.error || "Une erreur est survenue.",
+              loading: "Mise à jour du rôle...",
+              success: (data) => data.success || "Rôle mis à jour!",
+              error: (data) => data.error || "Une erreur est survenue.",
             });
           }}
         >
-          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             {Object.values(Role).map((role) => (
-              <SelectItem key={role} value={role}>{role}</SelectItem>
+              <SelectItem key={role} value={role}>
+                {role}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
+      );
+    },
+  },
+  {
+    accessorKey: "isActive",
+    header: "Statut",
+    cell: ({ row }) => {
+      const isActive = row.original.isActive;
+      return (
+        <Badge variant={isActive ? "default" : "destructive"}>
+          {isActive ? "Actif" : "Désactivé"}
+        </Badge>
       );
     },
   },

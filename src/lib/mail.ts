@@ -26,3 +26,24 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
     html: `<p>Cliquez sur le lien suivant pour réinitialiser votre mot de passe : <a href="${resetLink}">Réinitialiser mon mot de passe</a></p>`,
   });
 };
+
+export const sendWelcomeEmail = async (email: string, name: string, temporaryPassword: string) => {
+  const loginLink = `${domain}/connexion`;
+
+  await resend.emails.send({
+    from: "EduNext <onboarding@resend.dev>",
+    to: email,
+    subject: "Bienvenue sur EduNext ! Votre compte a été créé.",
+    html: `
+      <h1>Bienvenue, ${name} !</h1>
+      <p>Votre candidature a été acceptée et votre compte étudiant a été créé.</p>
+      <p>Voici vos identifiants de connexion :</p>
+      <ul>
+        <li><strong>Email :</strong> ${email}</li>
+        <li><strong>Mot de passe temporaire :</strong> ${temporaryPassword}</li>
+      </ul>
+      <p>Nous vous recommandons de changer votre mot de passe après votre première connexion.</p>
+      <a href="${loginLink}">Se connecter à la plateforme</a>
+    `,
+  });
+};

@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import "./globals.css";
-import { ModalProvider } from "@/components/theme/provider/modal-provider";
+import { ModalProvider } from "@/components/provider/modal-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 

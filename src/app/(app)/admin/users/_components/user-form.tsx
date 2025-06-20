@@ -10,10 +10,23 @@ import { Role } from "@prisma/client";
 
 import { RegisterSchema } from "@/schemas";
 import { createUser } from "@/actions/user";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-// import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface UserFormProps {
   onClose: () => void;
@@ -29,32 +42,72 @@ export const UserForm = ({ onClose }: UserFormProps) => {
 
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     startTransition(() => {
-      createUser(values).then((data) => {
-        if (data.error) toast.error(data.error);
-        if (data.success) {
-          toast.success(data.success);
-          onClose();
-        }
-      }).catch(() => toast.error("Une erreur est survenue."));
+      createUser(values)
+        .then((data) => {
+          if (data.error) toast.error(data.error);
+          if (data.success) {
+            toast.success(data.success);
+            onClose();
+          }
+        })
+        .catch(() => toast.error("Une erreur est survenue."));
     });
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {/* ... Champs pour name, email, password, role ... */}
-        {/* Exemple pour le champ Rôle */}
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nom complet</FormLabel>
+              <Input placeholder="Nom" {...field} disabled={isPending} />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <Input placeholder="Email" {...field} disabled={isPending} />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Mot de passe par défaut</FormLabel>
+              <Input placeholder="Mot de passe" {...field} disabled={isPending} />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="role"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Rôle</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={isPending}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
                 <SelectContent>
                   {Object.values(Role).map((role) => (
-                    <SelectItem key={role} value={role}>{role}</SelectItem>
+                    <SelectItem key={role} value={role}>
+                      {role}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
