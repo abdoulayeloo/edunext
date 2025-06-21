@@ -19,10 +19,9 @@ import {
 import { UserForm } from "./user-form";
 import { DataTable } from "@/components/ui/data-table";
 import { useRouter } from "next/navigation";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 export const UsersClient = ({ data }: { data: User[] }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
@@ -32,18 +31,21 @@ export const UsersClient = ({ data }: { data: User[] }) => {
   };
   return (
     <>
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Créer un nouvel utilisateur</DialogTitle>
           </DialogHeader>
-          <UserForm onClose={() => setIsModalOpen(false)} />
+          <UserForm onClose={() => setIsCreateModalOpen(false)} />
         </DialogContent>
       </Dialog>
       <Dialog open={isImportModalOpen} onOpenChange={setIsImportModalOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Importer des utilisateurs par CSV</DialogTitle>
+            <DialogDescription>
+              Vous pouvez importer des utilisateurs en utilisant un fichier CSV.
+            </DialogDescription>
           </DialogHeader>
           <UserImporter onClose={() => setIsImportModalOpen(false)} />
         </DialogContent>
@@ -51,11 +53,18 @@ export const UsersClient = ({ data }: { data: User[] }) => {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold">Utilisateurs ({data.length})</h1>
         <div className="flex gap-x-2">
-          <Button onClick={() => setIsImportModalOpen(true)} variant="outline">
+          <Button
+            className="cursor-pointer"
+            onClick={() => setIsImportModalOpen(true)}
+            variant="outline"
+          >
             <Upload className="h-4 w-4 mr-2" />
             Importer
           </Button>
-          <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Button
+            className="cursor-pointer"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
             <Plus className="h-4 w-4 mr-2" />
             Créer un utilisateur
           </Button>

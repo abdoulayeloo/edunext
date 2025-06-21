@@ -15,6 +15,7 @@ import { UEForm } from "@/app/(app)/admin/formations/[formationId]/_components/u
 import { ECForm } from "@/app/(app)/admin/formations/[formationId]/_components/ec-form";
 import { FormationForm } from "@/app/(app)/admin/formations/_components/formation-form";
 import { AcademicYearForm } from "@/app/(app)/admin/academic-years/_components/academic-year-form";
+import { AppreciationForm } from "@/app/(app)/enseignant/_components/appreciation-form";
 
 // Importez tous vos formulaires
 
@@ -47,12 +48,14 @@ export const ModalProvider = () => {
           />
         );
       case "createUE":
-        return <UEForm semesterId={data.semesterId!} onClose={handleClose} />;
+        if (!data.semesterId) return null;
+        return <UEForm semesterId={data.semesterId} onClose={handleClose} />;
       case "editUE":
+        if (!data.ue || !data.semesterId) return null;
         return (
           <UEForm
             initialData={data.ue}
-            semesterId={data.semesterId!}
+            semesterId={data.semesterId}
             onClose={handleClose}
           />
         );
@@ -100,6 +103,13 @@ export const ModalProvider = () => {
             onClose={handleClose}
           />
         );
+      case "editAppreciation":
+        return (
+          <AppreciationForm
+            initialData={data.enrollment!}
+            onClose={handleClose}
+          />
+        );
       default:
         return null;
     }
@@ -108,9 +118,11 @@ export const ModalProvider = () => {
   // Génère un titre pour la modale en fonction du type
   const getTitle = () => {
     if (!type) return "";
+    if (type === "editAppreciation")
+      return `Appréciation pour ${data.enrollment?.studentId}`;
     if (type.startsWith("create")) return "Nouvel élément";
     if (type.startsWith("edit")) return "Modifier l'élément";
-    return "";
+    return "Gérer l'élément";
   };
 
   return (

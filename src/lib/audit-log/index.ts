@@ -1,6 +1,6 @@
 // src/lib/audit-log.ts
 import { auth } from "@/auth";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 interface AuditLogProps {
   action: "CREATE" | "UPDATE" | "DELETE";

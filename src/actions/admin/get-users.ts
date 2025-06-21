@@ -2,7 +2,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Récupère tous les utilisateurs de la base de données.

@@ -2,7 +2,7 @@
 import { auth } from "@/auth";
 import { Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Met à jour le rôle d'un utilisateur spécifique.

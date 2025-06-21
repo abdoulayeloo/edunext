@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import { assignOrUpdateGrade } from "@/actions/grade/index";
+import { assignOrUpdateGrade } from "@/actions/grade";
 
 // Hook simple pour le debounce
 const useDebounce = (value: string, delay: number) => {

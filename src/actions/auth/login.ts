@@ -19,7 +19,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
         await signIn("credentials", {
             email,
             password,
-            redirectTo: "/", // Le middleware interceptera et redirigera correctement
+            redirectTo: "/"
         });
     } catch (error) {
         if (error instanceof AuthError) {
@@ -27,7 +27,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
                 case "CredentialsSignin":
                     return { error: "Email ou mot de passe incorrect." };
                 default:
-                    return { error: error.message };
+                    return { error: "Quelque chose ne va pas!" };
             }
         }
         throw error; // Renvoyer les autres erreurs

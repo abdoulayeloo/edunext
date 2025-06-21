@@ -1,6 +1,6 @@
 // src/data/enrollment.ts
 "use server";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 export const getEnrolledStudentsByFormation = async (formationId: string) => {
     try {

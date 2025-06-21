@@ -1,11 +1,11 @@
 // src/auth.ts
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { Role } from "@prisma/client";
 
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
+import { Role } from "@prisma/client";
 
 export const {
   handlers,
@@ -44,6 +44,14 @@ export const {
         }
         return session;
     },
+    /**
+     * Middleware NextAuth pour enrichir le token JWT avec les données de l'utilisateur
+     * enregistrées en BDD.
+     *
+     * @param {Object} param0 - Informations du token JWT
+     * @param {string} param0.sub - ID de l'utilisateur
+     * @returns {Promise<Object>} - Le token JWT enrichi
+     */
     async jwt({ token }) {
         if (!token.sub) return token;
 

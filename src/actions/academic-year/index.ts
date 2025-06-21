@@ -4,7 +4,7 @@
 import * as z from "zod";
 import { revalidatePath } from "next/cache";
 
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { AcademicYearSchema } from "@/schemas/academic-year";
 import { createAuditLog } from "@/lib/audit-log";

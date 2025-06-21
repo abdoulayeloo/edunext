@@ -1,5 +1,5 @@
 // src/data/formation.ts
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 export const getFormations = async () => {
     try {

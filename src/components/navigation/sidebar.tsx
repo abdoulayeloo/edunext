@@ -14,6 +14,7 @@ import {
   LogOut,
   CalendarDays,
   Loader2,
+  UserX,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -38,7 +39,9 @@ const professorRoutes = [
 ];
 
 const studentRoutes = [
-  { label: "Mes Résultats", href: "/etudiant", icon: GraduationCap },
+  { label: "Tableau de bord", href: "/etudiant", icon: LayoutDashboard },
+  { label: "Relevé de notes", href: "/etudiant/notes", icon: GraduationCap },
+  { label: "Mes Absences", href: "/etudiant/absences", icon: UserX },
 ];
 
 export const Sidebar = () => {
@@ -81,7 +84,8 @@ export const Sidebar = () => {
             {/* Assurez-vous que edunext.png est bien dans le dossier /public */}
             <Image
               src="/edunext.png"
-              fill
+              width={40}
+              height={40}
               alt="Logo EduNext"
             />
           </div>

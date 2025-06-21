@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { FormationSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 import { z } from "zod";
 import { createAuditLog } from "@/lib/audit-log";
 

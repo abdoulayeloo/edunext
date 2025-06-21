@@ -4,7 +4,7 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { getPasswordResetTokenByToken } from "@/actions/auth/password-reset-token";
 import { getUserByEmail } from "@/data/user";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 const NewPasswordSchema = z.object({ password: z.string().min(6) });
 

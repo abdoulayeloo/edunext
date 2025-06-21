@@ -147,7 +147,7 @@ export const ECForm = ({
               </FormItem>
             )}
           />
-          <Button type="reset" className="w-full" disabled={isPending}>
+          <Button type="submit" className="w-full" disabled={isPending}>
             {isPending ? "Enregistrement..." : actionLabel}
           </Button>
         </form>

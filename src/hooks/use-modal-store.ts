@@ -1,8 +1,9 @@
 // src/hooks/use-modal-store.ts
 import { create } from "zustand";
-import { Formation, Semester, UE, EC, User, AcademicYear } from "@prisma/client";
+import { Formation, Semester, UE, EC, User, AcademicYear, Enrollment } from "@prisma/client";
 
 export type ModalType =
+    | "editAppreciation"
     | "createAcademicYear" | "editAcademicYear"
     | "createSemester" | "editSemester"
     | "createUE" | "editUE"
@@ -11,6 +12,7 @@ export type ModalType =
 
 interface ModalData {
     // Données pour l'édition
+    enrollment?: Enrollment;
     formation?: Formation;
     semester?: Semester;
     ue?: UE;

@@ -1,6 +1,6 @@
 // src/data/audit-log.ts
 "use server";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 export const getAuditLogs = async () => {
     try {

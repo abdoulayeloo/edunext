@@ -1,5 +1,5 @@
 // src/data/admin-stats.ts
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Récupère le nombre total d'utilisateurs par rôle.

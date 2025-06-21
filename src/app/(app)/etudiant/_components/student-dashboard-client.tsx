@@ -1,4 +1,3 @@
-// src/app/etudiant/_components/student-dashboard-client.tsx
 "use client";
 
 import {

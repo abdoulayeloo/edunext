@@ -1,3 +1,4 @@
+// src/app/(app)/admin/formations/[formationId]/_components/ue-form.tsx
 "use client";
 
 import * as z from "zod";
@@ -8,8 +9,15 @@ import { toast } from "sonner";
 import { UE } from "@prisma/client";
 
 import { UESchema } from "@/schemas";
-import { createUE, updateUE } from "@/actions/UEs"; 
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { createUE, updateUE } from "@/actions/UEs"; // Vérifiez que ce chemin est correct
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -19,11 +27,14 @@ interface UEFormProps {
   onClose: () => void;
 }
 
-export const UEForm = ({ semesterId, initialData, onClose }: UEFormProps) => {
+export const UEForm = ({
+  semesterId,
+  initialData,
+  onClose }: UEFormProps) => {
   const [isPending, startTransition] = useTransition();
 
   const formTitle = initialData ? "Modifier l'UE" : "Créer une nouvelle UE";
-  const actionLabel = initialData ? "Enregistrer" : "Créer";
+  const actionLabel = initialData ? "Enregistrer les modifications" : "Créer";
 
   const form = useForm<z.infer<typeof UESchema>>({
     resolver: zodResolver(UESchema),
@@ -34,19 +45,28 @@ export const UEForm = ({ semesterId, initialData, onClose }: UEFormProps) => {
     },
   });
 
+  /**
+   * Gère la soumission du formulaire.
+   *
+   * Si {@link initialData} est défini, met à jour l'UE correspondante avec les
+   * valeurs du formulaire. Sinon, crée une nouvelle UE avec ces valeurs.
+   *
+   * @param values Les valeurs du formulaire, validées par le schéma {@link UESchema}.
+   */
   const onSubmit = (values: z.infer<typeof UESchema>) => {
     startTransition(() => {
       const action = initialData
         ? updateUE({ ...values, id: initialData.id })
         : createUE(values);
-
-      action.then((data) => {
-        if (data.error) toast.error(data.error);
-        if (data.success) {
-          toast.success(data.success);
-          onClose();
-        }
-      }).catch(() => toast.error("Une erreur est survenue."));
+      action
+        .then((data) => {
+          if (data?.error) toast.error(data.error);
+          if (data?.success) {
+            toast.success(data.success);
+            onClose();
+          }
+        })
+        .catch(() => toast.error("Une erreur est survenue."));
     });
   };
 
@@ -62,7 +82,11 @@ export const UEForm = ({ semesterId, initialData, onClose }: UEFormProps) => {
               <FormItem>
                 <FormLabel>{"Nom de l'UE"}</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Ex: UEF 3.1: Algorithmique" disabled={isPending} />
+                  <Input
+                    {...field}
+                    placeholder="Ex: UEF 3.1: Algorithmique"
+                    disabled={isPending}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -75,13 +99,18 @@ export const UEForm = ({ semesterId, initialData, onClose }: UEFormProps) => {
               <FormItem>
                 <FormLabel>Crédits ECTS</FormLabel>
                 <FormControl>
-                  <Input {...field} type="number" placeholder="Ex: 12" disabled={isPending} />
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="Ex: 12"
+                    disabled={isPending}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full cursor-pointer" disabled={isPending}>
+          <Button type="submit" className="w-full" disabled={isPending}>
             {isPending ? "Enregistrement..." : actionLabel}
           </Button>
         </form>

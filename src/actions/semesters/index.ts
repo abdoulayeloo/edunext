@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { SemesterSchema } from "@/schemas/semester";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 
 /**
  * Crée un nouveau semestre pour une formation.

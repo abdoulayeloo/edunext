@@ -4,7 +4,7 @@
 import * as z from "zod";
 import { revalidatePath } from "next/cache";
 
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 
 const EnrollmentSchema = z.object({

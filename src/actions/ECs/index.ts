@@ -2,10 +2,19 @@
 import { auth } from "@/auth";
 import { ECSchema } from "@/schemas";
 import { z } from "zod";
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 import { revalidatePath } from "next/cache";
 
-// --- ACTIONS Éléments Constitutifs (EC) ---
+
+/**
+ * Crée une nouvelle EC.
+ * Rôle requis : ADMIN
+ * 
+ * @param values Un objet contenant les informations de l'EC à créer, 
+ * incluant le nom, les crédits et l'ID de l'UE.
+ * @returns Un objet avec un champ "success" si la création a réussi, 
+ * ou un champ "error" en cas d'erreur ou d'accès non autorisé.
+ */
 export const createEC = async (values: z.infer<typeof ECSchema>) => {
     const session = await auth();
     if (session?.user?.role !== "ADMIN") return { error: "Accès non autorisé !" };
@@ -29,7 +38,6 @@ export const createEC = async (values: z.infer<typeof ECSchema>) => {
  * @returns Un objet avec un champ "success" si la mise à jour a réussi, 
  * ou un champ "error" en cas d'erreur ou d'accès non autorisé.
  */
-
 export const updateEC = async (values: z.infer<typeof ECSchema>) => {
     const session = await auth();
     if (session?.user?.role !== "ADMIN") return { error: "Accès non autorisé !" };

@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "mysql"
-  url               = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
   // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -37,49 +37,49 @@ enum ApplicationStatus {
 }
 
 model PreRegistration {
-  id                      String   @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   // Etat Civil
-  lastName                String
-  firstName               String
-  dateOfBirth             DateTime
-  placeOfBirth            String
-  nationality             String
-  gender                  String
-  address                 String
-  city                    String
-  country                 String
-  phone                   String
-  email                   String   @unique
+  lastName     String
+  firstName    String
+  dateOfBirth  DateTime
+  placeOfBirth String
+  nationality  String
+  gender       String
+  address      String
+  city         String
+  country      String
+  phone        String
+  email        String   @unique
 
   // Programme
-  desiredProgramId        String // Fait référence à l'ID d'une Formation
-  entryYear               String
-  examCenter              String
+  desiredProgramId String // Fait référence à l'ID d'une Formation
+  entryYear        String
+  examCenter       String
 
   // Pour l'instant, nous stockons les chemins des fichiers. L'upload sera une étape future.
-  diplomaCopyPath         String?
-  transcriptsPath         String?
-  photoPath               String?
+  diplomaCopyPath String?
+  transcriptsPath String?
+  photoPath       String?
 
   // Responsable Financier
-  financierLastName       String
-  financierFirstName      String
-  financierAddress        String
-  financierPhone          String
-  financierEmail          String
+  financierLastName  String
+  financierFirstName String
+  financierAddress   String
+  financierPhone     String
+  financierEmail     String
 
   // Infos supplémentaires
-  howDidYouHear           String?
-  
-  // Statut de la candidature
-  status                  ApplicationStatus @default(PENDING)
+  howDidYouHear String?
 
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  // Statut de la candidature
+  status ApplicationStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relation avec la Formation
-  desiredProgram          Formation @relation(fields: [desiredProgramId], references: [id])
+  desiredProgram Formation @relation(fields: [desiredProgramId], references: [id])
 }
 
 enum EvaluationType {
@@ -100,13 +100,14 @@ model User {
   email          String?   @unique
   emailVerified  DateTime?
   image          String?
-  hashedPassword String? 
+  hashedPassword String?
   role           Role      @default(STUDENT)
   isActive       Boolean   @default(true)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
   // Relations
+  announcements   Announcement[]
   accounts         Account[]
   sessions         Session[]
   studentProfile   Student? // Un utilisateur peut avoir un profil étudiant
@@ -174,6 +175,7 @@ model Student {
   // Relations
   enrollments Enrollment[]
   grades      Grade[]
+  absences    Absence[] // Ajouter cette relation
 }
 
 // Profil pour un professeur, lié à un User
@@ -186,6 +188,8 @@ model Professor {
   // Relations
   // Un professeur peut enseigner plusieurs Éléments Constitutifs (EC)
   coursesTaught EC[]
+
+  absencesRecorded Absence[]
 }
 
 // Profil pour un administrateur, lié à un User
@@ -257,6 +261,29 @@ model EC {
 
   // Relations
   evaluations Evaluation[]
+  absences    Absence[]
+}
+
+// AJOUTEZ CE NOUVEAU MODÈLE COMPLET
+model Absence {
+  id        String   @id @default(cuid())
+  date      DateTime // Le jour et l'heure du cours où l'absence a eu lieu
+  justified Boolean  @default(false)
+  comment   String?
+
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  ecId String
+  ec   EC     @relation(fields: [ecId], references: [id], onDelete: Cascade)
+
+  professorId String // Le professeur qui a enregistré l'absence
+  professor   Professor @relation(fields: [professorId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  // Un étudiant ne peut être absent qu'une seule fois pour un cours donné à une date donnée
+  @@unique([studentId, ecId, date])
 }
 
 // -------------------------------------------
@@ -266,6 +293,7 @@ model EC {
 // Table de liaison qui inscrit un étudiant à une formation pour une année donnée
 model Enrollment {
   id             String       @id @default(cuid())
+  appreciation   String?      @db.Text
   studentId      String
   student        Student      @relation(fields: [studentId], references: [id])
   formationId    String
@@ -305,13 +333,25 @@ model Grade {
 
 model AuditLog {
   id          String   @id @default(cuid())
-  action      String   // ex: "CREATE", "UPDATE", "DELETE"
-  entityId    String   // ID de l'entité affectée (ex: ID d'une formation)
-  entityType  String   // Type de l'entité (ex: "FORMATION", "USER")
-  entityTitle String   // Titre/nom de l'entité pour un affichage facile
+  action      String // ex: "CREATE", "UPDATE", "DELETE"
+  entityId    String // ID de l'entité affectée (ex: ID d'une formation)
+  entityType  String // Type de l'entité (ex: "FORMATION", "USER")
+  entityTitle String // Titre/nom de l'entité pour un affichage facile
   userId      String
   userName    String?
   userEmail   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Announcement {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+
+  authorId    String   // L'ID de l'utilisateur admin qui a posté l'annonce
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

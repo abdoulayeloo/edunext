@@ -2,7 +2,7 @@
 "use server";
 
 import * as z from "zod";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import { PreRegistrationSchema } from "@/schemas/preregistration";
 import { auth } from "@/auth";
 import bcrypt from "bcryptjs";

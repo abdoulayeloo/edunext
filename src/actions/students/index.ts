@@ -1,7 +1,7 @@
 // src/data/student.ts
 "use server";
 
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Récupère et met en forme toutes les données académiques pour un étudiant donné.

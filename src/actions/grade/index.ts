@@ -4,7 +4,7 @@
 import * as z from "zod";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 const GradeSchema = z.object({
   value: z.coerce.number().min(0, "La note doit être positive.").max(20, "La note ne peut excéder 20."),

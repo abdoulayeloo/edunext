@@ -1,7 +1,7 @@
 "use server";
 import { auth } from "@/auth";
 import { FormationSchema } from "@/schemas";
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 

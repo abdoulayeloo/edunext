@@ -39,9 +39,7 @@ export const FormationStructureClient = ({
   const { onOpen } = useModal();
   const [isPending, startTransition] = useTransition();
 
-  const [activeSemester, setActiveSemester] = useState<
-    (Semester & { ues: (UE & { ecs: EC[] })[] }) | null
-  >(formation.semesters[0] || null);
+  const [activeSemester, setActiveSemester] = useState<(Semester & { ues: (UE & { ecs: EC[] })[] }) | null>(formation.semesters[0] || null);
 
   // State pour la modale de suppression
   const [deleteTarget, setDeleteTarget] = useState<{
@@ -81,9 +79,7 @@ export const FormationStructureClient = ({
           <AlertDialogHeader>
             <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>
             <AlertDialogDescription>
-              {
-                "Cette action est irréversible et supprimera l'élément de manière permanente."
-              }
+              {"Cette action est irréversible et supprimera l'élément de manière permanente."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

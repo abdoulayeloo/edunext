@@ -5,7 +5,7 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { RegisterSchema } from "@/schemas";
 import { getUserByEmail } from "@/data/user";

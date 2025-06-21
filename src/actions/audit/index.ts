@@ -4,7 +4,7 @@ import { createAuditLog } from "@/lib/audit-log"; // Importez la nouvelle foncti
 import { FormationSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 import { auth } from "@/auth";
 
 // ...

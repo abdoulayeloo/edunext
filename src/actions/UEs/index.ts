@@ -2,7 +2,7 @@
 import { auth } from "@/auth";
 import { UESchema } from "@/schemas"
 import { z } from "zod"
-import { prisma } from '../../lib/db';
+import { prisma } from '../../lib/prisma';
 import { revalidatePath } from "next/cache";
 
 
@@ -16,7 +16,6 @@ import { revalidatePath } from "next/cache";
  * @returns Un objet avec un champ "success" si la création a réussi, 
  * ou un champ "error" en cas d'erreur ou d'accès non autorisé.
  */
-
 export const createUE = async (values: z.infer<typeof UESchema>) => {
     const session = await auth();
     if (session?.user?.role !== "ADMIN") return { error: "Accès non autorisé !" };
@@ -59,6 +58,12 @@ export const updateUE = async (values: z.infer<typeof UESchema>) => {
     return { success: "UE mise à jour !" };
 }
 
+/**
+ * Supprime un semestre existant.
+ * Rôle requis : ADMIN
+ * @param id L'ID du semestre à supprimer.
+ * @returns Un objet avec un champ "success" si la suppression a réussi, ou un champ "error" sinon.
+ */
 export const deleteSemester = async (id: string) => {
     const session = await auth();
     if (session?.user?.role !== "ADMIN") return { error: "Accès non autorisé !" };
