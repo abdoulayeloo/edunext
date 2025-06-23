@@ -10,7 +10,7 @@ import { prisma } from "@/lib/prisma";
 export const getStudentDashboardData = async (userId: string) => {
     try {
         const studentProfile = await prisma.student.findUnique({
-            where: { userId },
+            where: { userId: userId },
             include: {
                 enrollments: {
                     // On pourrait filtrer par année académique ici si nécessaire
@@ -40,6 +40,7 @@ export const getStudentDashboardData = async (userId: string) => {
                         },
                     },
                 },
+                user: true,
                 grades: true, // On récupère toutes les notes de l'étudiant
             },
         });
